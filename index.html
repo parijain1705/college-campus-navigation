@@ -1,0 +1,1404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jain College Campus Navigator</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(255, 204, 230, 0.45),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at top right,
+            rgba(178, 235, 255, 0.45),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at bottom left,
+            rgba(214, 255, 196, 0.45),
+            transparent 28%
+          ),
+          linear-gradient(135deg, #eef7ff, #fdfbff, #f3fff8);
+        color: #243b53;
+        overflow-x: hidden;
+      }
+
+      header {
+        background: linear-gradient(135deg, #3a0ca3, #4361ee, #4cc9f0);
+        color: white;
+        text-align: center;
+        padding: 34px 20px 28px;
+        box-shadow: 0 10px 30px rgba(67, 97, 238, 0.25);
+        position: relative;
+        overflow: hidden;
+      }
+
+      header::before,
+      header::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      header::before {
+        width: 220px;
+        height: 220px;
+        top: -80px;
+        left: -60px;
+      }
+
+      header::after {
+        width: 260px;
+        height: 260px;
+        right: -80px;
+        bottom: -120px;
+      }
+
+      header h1 {
+        font-size: 2.35rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 2;
+        letter-spacing: 0.3px;
+      }
+
+      header p {
+        font-size: 1rem;
+        opacity: 0.96;
+        position: relative;
+        z-index: 2;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding: 18px 20px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(10px);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      }
+
+      .tab-btn {
+        border: none;
+        background: linear-gradient(135deg, #e8f0ff, #f7ebff);
+        color: #334e68;
+        padding: 13px 22px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 0.97rem;
+        font-weight: 600;
+        transition: all 0.28s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .tab-btn:hover {
+        transform: translateY(-3px) scale(1.02);
+        background: linear-gradient(135deg, #dce9ff, #f0ddff);
+        color: #1f3c88;
+      }
+
+      .tab-btn.active {
+        background: linear-gradient(135deg, #7209b7, #4361ee, #4cc9f0);
+        color: white;
+        box-shadow: 0 10px 22px rgba(67, 97, 238, 0.28);
+      }
+
+      .tab-content {
+        display: none;
+        padding: 32px 20px 44px;
+        max-width: 1300px;
+        margin: auto;
+        animation: fadeUp 0.35s ease;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 24px;
+        align-items: stretch;
+        margin-top: 8px;
+      }
+
+      .hero-card,
+      .info-panel,
+      .search-panel,
+      .map-panel,
+      .building-panel,
+      .legend-box {
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 24px;
+        box-shadow: 0 14px 34px rgba(31, 41, 55, 0.09);
+        padding: 26px;
+        transition:
+          transform 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .hero-card:hover,
+      .info-panel:hover,
+      .search-panel:hover,
+      .map-panel:hover,
+      .building-panel:hover,
+      .legend-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 40px rgba(31, 41, 55, 0.12);
+      }
+
+      .hero h2 {
+        font-size: 2rem;
+        margin-bottom: 14px;
+        color: #3a0ca3;
+      }
+
+      .hero p {
+        line-height: 1.8;
+        font-size: 0.99rem;
+        color: #486581;
+        margin-bottom: 12px;
+      }
+
+      .highlight-box {
+        margin-top: 18px;
+        padding: 18px;
+        border-radius: 18px;
+        background: linear-gradient(
+          135deg,
+          rgba(76, 201, 240, 0.12),
+          rgba(114, 9, 183, 0.12)
+        );
+        border: 1px solid rgba(67, 97, 238, 0.18);
+        border-left: 6px solid #4361ee;
+        color: #294861;
+        line-height: 1.8;
+      }
+
+      .quick-points {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
+        margin-top: 24px;
+      }
+
+      .point-card {
+        padding: 20px;
+        border-radius: 22px;
+        background: linear-gradient(145deg, #ffffff, #f3f7ff);
+        border: 1px solid #e0ebff;
+        box-shadow: 0 8px 20px rgba(100, 116, 139, 0.08);
+        transition: all 0.28s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .point-card::before {
+        content: "";
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        right: -35px;
+        top: -35px;
+        background: rgba(76, 201, 240, 0.12);
+      }
+
+      .point-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 26px rgba(67, 97, 238, 0.12);
+      }
+
+      .point-card h4 {
+        color: #3a0ca3;
+        margin-bottom: 8px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .point-card p {
+        color: #5b7083;
+        line-height: 1.7;
+        position: relative;
+        z-index: 2;
+      }
+
+      .details-layout {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 22px;
+        align-items: start;
+      }
+
+      .search-panel h3,
+      .building-panel h3,
+      .map-panel h3,
+      .legend-box h3 {
+        margin-bottom: 15px;
+        color: #3a0ca3;
+        font-size: 1.35rem;
+      }
+
+      .search-group {
+        margin-bottom: 16px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #334e68;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 13px 14px;
+        border-radius: 14px;
+        border: 1.5px solid #d9e8ff;
+        outline: none;
+        font-size: 0.97rem;
+        background: linear-gradient(135deg, #ffffff, #f9fbff);
+        color: #243b53;
+        transition: all 0.22s ease;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #4361ee;
+        box-shadow: 0 0 0 5px rgba(67, 97, 238, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .btn {
+        width: 100%;
+        border: none;
+        padding: 13px 16px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #7209b7, #4361ee, #4cc9f0);
+        color: white;
+        font-weight: 700;
+        font-size: 0.97rem;
+        cursor: pointer;
+        transition: all 0.28s ease;
+        margin-top: 8px;
+        box-shadow: 0 10px 22px rgba(67, 97, 238, 0.22);
+      }
+
+      .btn:hover {
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 14px 28px rgba(67, 97, 238, 0.28);
+      }
+
+      .route-result {
+        margin-top: 18px;
+        background: linear-gradient(135deg, #f5f9ff, #fdf6ff);
+        border: 1px solid #dde8ff;
+        padding: 16px;
+        border-radius: 18px;
+        min-height: 100px;
+        line-height: 1.75;
+        color: #35526d;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      }
+
+      .building-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .building-card {
+        background: linear-gradient(145deg, #ffffff, #f6f9ff);
+        border: 1px solid #dbe8ff;
+        border-radius: 20px;
+        padding: 18px;
+        cursor: pointer;
+        transition: all 0.28s ease;
+        box-shadow: 0 8px 18px rgba(67, 97, 238, 0.05);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .building-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #7209b7, #4361ee, #4cc9f0);
+      }
+
+      .building-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 28px rgba(67, 97, 238, 0.12);
+        border-color: #b8ccff;
+      }
+
+      .building-card.active {
+        background: linear-gradient(135deg, #eef2ff, #f7ecff);
+        border: 2px solid #4361ee;
+        box-shadow: 0 16px 30px rgba(67, 97, 238, 0.16);
+      }
+
+      .building-card h4 {
+        color: #2f2c79;
+        margin-bottom: 8px;
+        font-size: 1.02rem;
+      }
+
+      .building-card p {
+        font-size: 0.92rem;
+        color: #5d7285;
+        line-height: 1.6;
+      }
+
+      .building-detail-box {
+        background: linear-gradient(145deg, #ffffff, #fcfcff);
+        border: 1px solid #e0ebff;
+        border-radius: 22px;
+        padding: 24px;
+        min-height: 260px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      }
+
+      .building-detail-box h2 {
+        color: #3a0ca3;
+        margin-bottom: 10px;
+        font-size: 1.7rem;
+      }
+
+      .building-detail-box p {
+        line-height: 1.8;
+        margin-bottom: 12px;
+        color: #486581;
+      }
+
+      .building-detail-box ul {
+        margin-left: 22px;
+        color: #486581;
+        line-height: 1.9;
+      }
+
+      .map-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 22px;
+        align-items: start;
+      }
+
+      .map-container {
+        width: 100%;
+        overflow: auto;
+        border-radius: 22px;
+        background: linear-gradient(
+          180deg,
+          #e8f7ff 0%,
+          #f8fcff 55%,
+          #eefaf0 100%
+        );
+        padding: 16px;
+        border: 1px solid #dcecff;
+        position: relative;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      }
+
+      svg {
+        width: 100%;
+        min-width: 980px;
+        height: auto;
+        display: block;
+        border-radius: 18px;
+      }
+
+      .map-node {
+        cursor: pointer;
+        transition: all 0.25s ease;
+        filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.08));
+      }
+
+      .map-node:hover {
+        filter: brightness(1.08) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.12));
+        stroke-width: 4 !important;
+        transform-origin: center;
+      }
+
+      .map-label {
+        font-size: 14px;
+        font-weight: 700;
+        fill: #163754;
+        pointer-events: none;
+      }
+
+      .path-line {
+        stroke: #8a9db3;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-dasharray: 8 10;
+      }
+
+      .tooltip {
+        position: absolute;
+        background: linear-gradient(
+          135deg,
+          rgba(58, 12, 163, 0.96),
+          rgba(67, 97, 238, 0.96)
+        );
+        color: white;
+        padding: 10px 13px;
+        border-radius: 12px;
+        font-size: 0.88rem;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+        z-index: 100;
+        max-width: 220px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        color: #486581;
+        font-size: 0.95rem;
+      }
+
+      .legend-color {
+        width: 18px;
+        height: 18px;
+        border-radius: 5px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      }
+
+      .legend-box p {
+        margin-top: 15px;
+        line-height: 1.8;
+        color: #5b7083;
+      }
+
+      .footer-note {
+        text-align: center;
+        padding: 22px;
+        color: #5d7285;
+        font-size: 0.95rem;
+        font-weight: 500;
+      }
+
+      @media (max-width: 980px) {
+        .hero,
+        .details-layout,
+        .map-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .tabs {
+          position: static;
+        }
+
+        header h1 {
+          font-size: 1.85rem;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .tab-btn {
+          width: 100%;
+        }
+
+        .hero h2 {
+          font-size: 1.6rem;
+        }
+
+        .building-detail-box h2 {
+          font-size: 1.4rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Jain College Campus Navigator</h1>
+      <p>
+        Explore the campus, discover buildings, and find the shortest way to
+        your destination.
+      </p>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="welcome">
+        1. Welcoming to College
+      </button>
+      <button class="tab-btn" data-tab="buildings">2. About Buildings</button>
+      <button class="tab-btn" data-tab="map">3. Interactive Map</button>
+    </div>
+
+    <!-- TAB 1 -->
+    <section id="welcome" class="tab-content active">
+      <div class="hero">
+        <div class="hero-card">
+          <h2>Welcome to Jain College</h2>
+          <p>
+            This smart campus navigator helps students, visitors, and faculty
+            understand the structure of the college campus in a simple and
+            interactive way. Instead of getting lost or asking ten people where
+            the B.Sc block is, this system gives you a clear campus view and
+            building details.
+          </p>
+          <p>
+            The campus starts from the <strong>Entrance Gate</strong>. As you
+            enter, the <strong>Sports Complex</strong> lies on the right side.
+            From the main route, the path further divides toward the
+            <strong>Administration Block</strong> and the
+            <strong>B.Sc Block</strong>. Beyond that, the academic blocks
+            continue in sequence.
+          </p>
+          <div class="highlight-box">
+            <strong>What this website does:</strong><br />
+            • Gives a college introduction<br />
+            • Explains what each building contains<br />
+            • Lets you search a destination and get directions<br />
+            • Shows an interactive campus map with hover and click actions
+          </div>
+        </div>
+
+        <div class="info-panel">
+          <h2 style="font-size: 1.6rem">Campus Flow</h2>
+          <p><strong>Starting Point:</strong> Entrance Gate</p>
+          <p><strong>Right side after entry:</strong> Sports Complex</p>
+          <p>
+            <strong>Main branching route:</strong> Administration Block / B.Sc
+            Block
+          </p>
+          <p><strong>Academic sequence after B.Sc:</strong></p>
+          <p>
+            Mathematics Block → Biology Block → BBA Block → BCom Block → Arts
+            Block → Masters Block → PhD Block
+          </p>
+          <p>
+            Use the second tab to read building details. Use the third tab to
+            explore the live campus map.
+          </p>
+        </div>
+      </div>
+
+      <div class="quick-points">
+        <div class="point-card">
+          <h4>Interactive Navigation</h4>
+          <p>
+            Search any block and get route guidance from the entrance or another
+            selected point.
+          </p>
+        </div>
+        <div class="point-card">
+          <h4>Smart Building Details</h4>
+          <p>
+            Click a building to instantly see what it contains and who it is
+            meant for.
+          </p>
+        </div>
+        <div class="point-card">
+          <h4>Hover-Based Map UI</h4>
+          <p>
+            Hover over campus areas to preview names. Click them to jump to
+            detailed information.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2 -->
+    <section id="buildings" class="tab-content">
+      <div class="details-layout">
+        <div class="search-panel">
+          <h3>Search Where You Want to Go</h3>
+
+          <div class="search-group">
+            <label for="fromLocation">From</label>
+            <select id="fromLocation"></select>
+          </div>
+
+          <div class="search-group">
+            <label for="searchInput">Destination</label>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Example: B.Sc Block, Dean, Football Ground"
+            />
+          </div>
+
+          <button class="btn" id="searchBtn">Find Route</button>
+
+          <div class="route-result" id="routeResult">
+            Enter a destination to see directions.
+          </div>
+        </div>
+
+        <div class="building-panel">
+          <h3>Campus Buildings & Sections</h3>
+
+          <div class="building-grid" id="buildingGrid"></div>
+
+          <div class="building-detail-box" id="buildingDetail">
+            <h2>Choose a building</h2>
+            <p>
+              Click on any building card or use the interactive map to see full
+              information here.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3 -->
+    <section id="map" class="tab-content">
+      <div class="map-layout">
+        <div class="map-panel">
+          <h3>Interactive Campus Map</h3>
+          <div class="map-container" id="mapContainer">
+            <div class="tooltip" id="tooltip"></div>
+
+            <svg viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg">
+              <!-- Paths -->
+              <line x1="150" y1="610" x2="350" y2="520" class="path-line" />
+              <line x1="350" y1="520" x2="510" y2="520" class="path-line" />
+              <line x1="510" y1="520" x2="650" y2="520" class="path-line" />
+              <line x1="650" y1="520" x2="790" y2="520" class="path-line" />
+              <line x1="790" y1="520" x2="930" y2="520" class="path-line" />
+              <line x1="930" y1="520" x2="1060" y2="520" class="path-line" />
+
+              <line x1="350" y1="520" x2="350" y2="340" class="path-line" />
+              <line x1="510" y1="520" x2="510" y2="360" class="path-line" />
+              <line x1="180" y1="610" x2="180" y2="390" class="path-line" />
+
+              <!-- Entrance -->
+              <rect
+                class="map-node"
+                data-id="entrance_gate"
+                x="70"
+                y="575"
+                width="160"
+                height="70"
+                rx="12"
+                fill="#ffd166"
+                stroke="#c98b00"
+                stroke-width="3"
+              />
+              <text x="150" y="618" text-anchor="middle" class="map-label">
+                Entrance Gate
+              </text>
+
+              <!-- Sports Complex -->
+              <rect
+                class="map-node"
+                data-id="sports_complex"
+                x="35"
+                y="265"
+                width="290"
+                height="105"
+                rx="16"
+                fill="#80ed99"
+                stroke="#2b9348"
+                stroke-width="3"
+              />
+              <text x="180" y="315" text-anchor="middle" class="map-label">
+                Sports Complex
+              </text>
+
+              <!-- Administration -->
+              <rect
+                class="map-node"
+                data-id="administration_block"
+                x="250"
+                y="210"
+                width="200"
+                height="95"
+                rx="16"
+                fill="#ffb5a7"
+                stroke="#d96c55"
+                stroke-width="3"
+              />
+              <text x="350" y="263" text-anchor="middle" class="map-label">
+                Administration Block
+              </text>
+
+              <!-- BSc -->
+              <rect
+                class="map-node"
+                data-id="bsc_block"
+                x="435"
+                y="430"
+                width="150"
+                height="90"
+                rx="16"
+                fill="#90dbf4"
+                stroke="#2c7da0"
+                stroke-width="3"
+              />
+              <text x="510" y="480" text-anchor="middle" class="map-label">
+                B.Sc Block
+              </text>
+
+              <!-- Mathematics -->
+              <rect
+                class="map-node"
+                data-id="mathematics_block"
+                x="600"
+                y="430"
+                width="150"
+                height="90"
+                rx="16"
+                fill="#cdb4db"
+                stroke="#7b2cbf"
+                stroke-width="3"
+              />
+              <text x="675" y="480" text-anchor="middle" class="map-label">
+                Mathematics Block
+              </text>
+
+              <!-- Biology -->
+              <rect
+                class="map-node"
+                data-id="biology_block"
+                x="765"
+                y="430"
+                width="150"
+                height="90"
+                rx="16"
+                fill="#95d5b2"
+                stroke="#2d6a4f"
+                stroke-width="3"
+              />
+              <text x="840" y="480" text-anchor="middle" class="map-label">
+                Biology Block
+              </text>
+
+              <!-- BBA -->
+              <rect
+                class="map-node"
+                data-id="bba_block"
+                x="930"
+                y="430"
+                width="120"
+                height="90"
+                rx="16"
+                fill="#ffd6a5"
+                stroke="#d17a22"
+                stroke-width="3"
+              />
+              <text x="990" y="480" text-anchor="middle" class="map-label">
+                BBA Block
+              </text>
+
+              <!-- BCom -->
+              <rect
+                class="map-node"
+                data-id="bcom_block"
+                x="1070"
+                y="430"
+                width="110"
+                height="90"
+                rx="16"
+                fill="#ffafcc"
+                stroke="#c05488"
+                stroke-width="3"
+              />
+              <text x="1125" y="480" text-anchor="middle" class="map-label">
+                BCom Block
+              </text>
+
+              <!-- Arts -->
+              <rect
+                class="map-node"
+                data-id="arts_block"
+                x="930"
+                y="285"
+                width="120"
+                height="90"
+                rx="16"
+                fill="#e0aaff"
+                stroke="#9d4edd"
+                stroke-width="3"
+              />
+              <text x="990" y="335" text-anchor="middle" class="map-label">
+                Arts Block
+              </text>
+
+              <!-- Masters -->
+              <rect
+                class="map-node"
+                data-id="masters_block"
+                x="1070"
+                y="285"
+                width="110"
+                height="90"
+                rx="16"
+                fill="#9bf6ff"
+                stroke="#1d8ca3"
+                stroke-width="3"
+              />
+              <text x="1125" y="335" text-anchor="middle" class="map-label">
+                Masters Block
+              </text>
+
+              <!-- PhD -->
+              <rect
+                class="map-node"
+                data-id="phd_block"
+                x="1070"
+                y="150"
+                width="110"
+                height="90"
+                rx="16"
+                fill="#dee2e6"
+                stroke="#6c757d"
+                stroke-width="3"
+              />
+              <text x="1125" y="200" text-anchor="middle" class="map-label">
+                PhD Block
+              </text>
+
+              <!-- Connecting lines for upper blocks -->
+              <line x1="990" y1="430" x2="990" y2="375" class="path-line" />
+              <line x1="1125" y1="430" x2="1125" y2="375" class="path-line" />
+              <line x1="1125" y1="285" x2="1125" y2="240" class="path-line" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="legend-box">
+          <h3>Map Guide</h3>
+
+          <div class="legend-item">
+            <span class="legend-color" style="background: #ffd166"></span>
+            Entrance / Main Entry
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #80ed99"></span>
+            Sports Area
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #ffb5a7"></span>
+            Administrative Zone
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #90dbf4"></span>
+            Academic Blocks
+          </div>
+
+          <p>
+            Hover over any building to view its name. Click on a building to
+            automatically open the
+            <strong>About Buildings</strong> tab with complete details.
+          </p>
+          <p>
+            This map is designed according to the structure you described, not
+            from a real GIS campus map.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      Jain College Campus Navigator • HTML • CSS • JavaScript
+    </div>
+
+    <script>
+      const buildings = {
+        entrance_gate: {
+          name: "Entrance Gate",
+          short: "Main campus entry point",
+          description:
+            "The Entrance Gate is the starting point of the college campus. It acts as the main access area for students, staff, visitors, and vehicles entering the institution.",
+          contains: [
+            "Main entry to the campus",
+            "Starting point for navigation",
+            "Access toward Sports Complex and academic routes",
+          ],
+          keywords: ["entrance", "gate", "main gate", "entry", "entrance gate"],
+          route: {
+            entrance_gate: "You are already at the Entrance Gate.",
+          },
+        },
+
+        sports_complex: {
+          name: "Sports Complex",
+          short: "Outdoor and indoor games zone",
+          description:
+            "The Sports Complex is located on the right side after entering the campus. It contains multiple outdoor grounds and an indoor sports building for students interested in athletics and recreation.",
+          contains: [
+            "Football Ground",
+            "Skating Ground",
+            "Handball Ground",
+            "Cricket Ground",
+            "Indoor Building",
+            "Carrom",
+            "Chess",
+            "Badminton",
+            "Pool",
+            "Table Tennis",
+          ],
+          keywords: [
+            "sports",
+            "sports complex",
+            "football",
+            "football ground",
+            "skating",
+            "skating ground",
+            "handball",
+            "handball ground",
+            "cricket",
+            "cricket ground",
+            "indoor building",
+            "carrom",
+            "chess",
+            "badminton",
+            "pool",
+            "table tennis",
+          ],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, move to the right side of the campus. The Sports Complex will be directly visible on your right.",
+            administration_block:
+              "From Administration Block, return to the main path toward the Entrance Gate and move right to reach the Sports Complex.",
+            bsc_block:
+              "From B.Sc Block, move back toward the main branching route near the Entrance and take the right side toward the Sports Complex.",
+          },
+        },
+
+        administration_block: {
+          name: "Administration Block",
+          short: "Higher authority offices and reception",
+          description:
+            "The Administration Block contains the offices and cabins of the senior authorities of the college. It is one of the first major branches after entering the campus.",
+          contains: [
+            "Dean Cabin",
+            "Principal Cabin",
+            "Director Cabin",
+            "Chairman Cabin",
+            "Vice Chairman Cabin",
+            "Director Academics",
+            "Department Heads",
+            "Reception Area",
+          ],
+          keywords: [
+            "administration",
+            "administration block",
+            "dean",
+            "principal",
+            "director",
+            "chairman",
+            "vice chairman",
+            "director academics",
+            "hod",
+            "department head",
+            "reception",
+            "office",
+          ],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, move ahead on the main route and take the branch leading upward/right toward the Administration Block.",
+            sports_complex:
+              "From the Sports Complex, return to the main path and follow the branch toward the Administration Block.",
+            bsc_block:
+              "From B.Sc Block, move backward along the main academic path to the branching route, then take the branch toward Administration Block.",
+          },
+        },
+
+        bsc_block: {
+          name: "B.Sc Block",
+          short: "Academic block for B.Sc students",
+          description:
+            "The B.Sc Block is the first main academic block on the route after the branching section. It serves students enrolled in Bachelor of Science programs.",
+          contains: [
+            "Classrooms for B.Sc students",
+            "Subject-wise lecture rooms",
+            "Student activity areas",
+          ],
+          keywords: ["bsc", "b.sc", "b.sc block", "bsc block", "science block"],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, walk straight on the main route, cross the first branching section, and continue to reach the B.Sc Block.",
+            administration_block:
+              "From Administration Block, come back to the branch point and continue forward on the main academic path to reach the B.Sc Block.",
+            sports_complex:
+              "From the Sports Complex, return to the main route and continue ahead toward the first academic block, which is the B.Sc Block.",
+          },
+        },
+
+        mathematics_block: {
+          name: "Mathematics Block",
+          short: "Mathematics department block",
+          description:
+            "Located immediately after the B.Sc Block, the Mathematics Block supports mathematics-related teaching and academic activities.",
+          contains: [
+            "Mathematics classrooms",
+            "Department spaces",
+            "Faculty rooms",
+          ],
+          keywords: ["math", "maths", "mathematics", "mathematics block"],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, move straight to the B.Sc Block and continue ahead. The next block is the Mathematics Block.",
+            bsc_block:
+              "From B.Sc Block, continue straight ahead on the same academic route to reach the Mathematics Block.",
+            administration_block:
+              "From Administration Block, come to the academic route, pass the B.Sc Block, and continue to the Mathematics Block.",
+          },
+        },
+
+        biology_block: {
+          name: "Biology Block",
+          short: "Biology teaching block",
+          description:
+            "The Biology Block comes after the Mathematics Block and houses biology-focused academic spaces.",
+          contains: [
+            "Biology classrooms",
+            "Possible lab-related academic rooms",
+            "Department teaching spaces",
+          ],
+          keywords: ["biology", "biology block", "bio block"],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, continue along the main academic route past B.Sc Block and Mathematics Block. The next one is Biology Block.",
+            mathematics_block:
+              "From Mathematics Block, continue straight on the same path to reach Biology Block.",
+            bsc_block:
+              "From B.Sc Block, pass Mathematics Block and continue to Biology Block.",
+          },
+        },
+
+        bba_block: {
+          name: "BBA Block",
+          short: "Business Administration block",
+          description:
+            "The BBA Block is meant for business administration students and is positioned after the Biology Block in the academic sequence.",
+          contains: [
+            "BBA classrooms",
+            "Business studies lecture areas",
+            "Academic faculty spaces",
+          ],
+          keywords: ["bba", "bba block", "business administration"],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, move along the academic route past B.Sc, Mathematics, and Biology Blocks. The next block is BBA.",
+            biology_block:
+              "From Biology Block, move straight ahead to reach BBA Block.",
+            bsc_block:
+              "From B.Sc Block, continue through Mathematics and Biology Blocks to reach the BBA Block.",
+          },
+        },
+
+        bcom_block: {
+          name: "BCom Block",
+          short: "Commerce studies block",
+          description:
+            "The BCom Block follows the BBA Block and is dedicated to students of commerce-related courses.",
+          contains: [
+            "BCom classrooms",
+            "Commerce subject teaching areas",
+            "Department academic rooms",
+          ],
+          keywords: [
+            "bcom",
+            "b.com",
+            "bcom block",
+            "commerce",
+            "commerce block",
+          ],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, continue on the main academic route, passing B.Sc, Mathematics, Biology, and BBA Blocks. BCom Block comes next.",
+            bba_block:
+              "From BBA Block, continue straight ahead to reach BCom Block.",
+            biology_block:
+              "From Biology Block, pass the BBA Block and continue to BCom Block.",
+          },
+        },
+
+        arts_block: {
+          name: "Arts Block",
+          short: "Arts and humanities area",
+          description:
+            "The Arts Block is positioned on the upper route branching near the later academic section. It serves arts and humanities students.",
+          contains: [
+            "Arts classrooms",
+            "Humanities lecture rooms",
+            "Faculty and departmental areas",
+          ],
+          keywords: ["arts", "arts block", "humanities"],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, follow the main academic route toward the later blocks, then take the upward branch near the BBA/BCom side to reach Arts Block.",
+            bba_block:
+              "From BBA Block, take the upper connecting path to reach the Arts Block.",
+            bcom_block:
+              "From BCom Block, move to the upper branch on the left side to reach Arts Block.",
+          },
+        },
+
+        masters_block: {
+          name: "Masters Block",
+          short: "Postgraduate studies block",
+          description:
+            "The Masters Block is designed for postgraduate programs and lies near the Arts Block on the upper academic side.",
+          contains: [
+            "Postgraduate classrooms",
+            "Masters program department areas",
+            "Advanced study spaces",
+          ],
+          keywords: [
+            "masters",
+            "masters block",
+            "pg",
+            "postgraduate",
+            "post graduate",
+          ],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, move through the academic route and then use the upper branch near the final academic blocks to reach the Masters Block.",
+            arts_block:
+              "From Arts Block, continue to the right on the upper route to reach Masters Block.",
+            bcom_block:
+              "From BCom Block, move upward and then toward the Masters Block.",
+          },
+        },
+
+        phd_block: {
+          name: "PhD Block",
+          short: "Research and doctoral studies block",
+          description:
+            "The PhD Block is the advanced academic and research area of the campus and is positioned above the Masters Block.",
+          contains: [
+            "Doctoral research spaces",
+            "Faculty/research cabins",
+            "Advanced academic support rooms",
+          ],
+          keywords: ["phd", "ph.d", "phd block", "research block", "doctoral"],
+          route: {
+            entrance_gate:
+              "From the Entrance Gate, continue along the academic route, move to the upper section near Masters Block, and then go further upward to reach the PhD Block.",
+            masters_block:
+              "From Masters Block, move upward on the connecting route to reach the PhD Block.",
+            arts_block:
+              "From Arts Block, move right to Masters Block and then continue upward to reach the PhD Block.",
+          },
+        },
+      };
+
+      const tabs = document.querySelectorAll(".tab-btn");
+      const tabContents = document.querySelectorAll(".tab-content");
+      const buildingGrid = document.getElementById("buildingGrid");
+      const buildingDetail = document.getElementById("buildingDetail");
+      const searchInput = document.getElementById("searchInput");
+      const searchBtn = document.getElementById("searchBtn");
+      const routeResult = document.getElementById("routeResult");
+      const fromLocation = document.getElementById("fromLocation");
+      const tooltip = document.getElementById("tooltip");
+      const mapContainer = document.getElementById("mapContainer");
+
+      function switchTab(tabId) {
+        tabs.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.tab === tabId);
+        });
+        tabContents.forEach((tab) => {
+          tab.classList.toggle("active", tab.id === tabId);
+        });
+      }
+
+      tabs.forEach((btn) => {
+        btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+      });
+
+      function populateFromLocations() {
+        Object.keys(buildings).forEach((id) => {
+          const option = document.createElement("option");
+          option.value = id;
+          option.textContent = buildings[id].name;
+          fromLocation.appendChild(option);
+        });
+        fromLocation.value = "entrance_gate";
+      }
+
+      function renderBuildingCards() {
+        const order = [
+          "entrance_gate",
+          "sports_complex",
+          "administration_block",
+          "bsc_block",
+          "mathematics_block",
+          "biology_block",
+          "bba_block",
+          "bcom_block",
+          "arts_block",
+          "masters_block",
+          "phd_block",
+        ];
+
+        buildingGrid.innerHTML = "";
+        order.forEach((id) => {
+          const b = buildings[id];
+          const card = document.createElement("div");
+          card.className = "building-card";
+          card.dataset.id = id;
+          card.innerHTML = `
+          <h4>${b.name}</h4>
+          <p>${b.short}</p>
+        `;
+          card.addEventListener("click", () => showBuildingDetails(id));
+          buildingGrid.appendChild(card);
+        });
+      }
+
+      function showBuildingDetails(id) {
+        const b = buildings[id];
+        if (!b) return;
+
+        document.querySelectorAll(".building-card").forEach((card) => {
+          card.classList.toggle("active", card.dataset.id === id);
+        });
+
+        buildingDetail.innerHTML = `
+        <h2>${b.name}</h2>
+        <p>${b.description}</p>
+        <p><strong>What it contains:</strong></p>
+        <ul>
+          ${b.contains.map((item) => `<li>${item}</li>`).join("")}
+        </ul>
+      `;
+      }
+
+      function findBuildingByQuery(query) {
+        const q = query.trim().toLowerCase();
+        if (!q) return null;
+
+        for (const id in buildings) {
+          if (
+            buildings[id].keywords.some(
+              (keyword) => keyword.toLowerCase() === q,
+            )
+          ) {
+            return id;
+          }
+        }
+
+        for (const id in buildings) {
+          if (
+            buildings[id].keywords.some((keyword) =>
+              keyword.toLowerCase().includes(q),
+            ) ||
+            buildings[id].name.toLowerCase().includes(q)
+          ) {
+            return id;
+          }
+        }
+
+        return null;
+      }
+
+      function getRoute(fromId, toId) {
+        if (fromId === toId) {
+          return `You are already at <strong>${buildings[toId].name}</strong>.`;
+        }
+
+        const direct = buildings[toId].route[fromId];
+        if (direct) return direct;
+
+        return `Start from <strong>${buildings[fromId].name}</strong>, return to the main campus path, and then continue toward <strong>${buildings[toId].name}</strong>. Use the map tab for a visual route.`;
+      }
+
+      function handleSearch() {
+        const query = searchInput.value;
+        const fromId = fromLocation.value;
+        const resultId = findBuildingByQuery(query);
+
+        if (!resultId) {
+          routeResult.innerHTML = `No exact destination found for <strong>${query}</strong>. Try terms like <em>B.Sc Block</em>, <em>Dean</em>, <em>Football Ground</em>, <em>PhD Block</em>.`;
+          return;
+        }
+
+        const building = buildings[resultId];
+        const routeText = getRoute(fromId, resultId);
+
+        routeResult.innerHTML = `
+        <strong>Destination Found:</strong> ${building.name}<br><br>
+        <strong>Route:</strong> ${routeText}<br><br>
+        <strong>Located in / related area:</strong> ${building.short}
+      `;
+
+        showBuildingDetails(resultId);
+      }
+
+      searchBtn.addEventListener("click", handleSearch);
+      searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleSearch();
+      });
+
+      document.querySelectorAll(".map-node").forEach((node) => {
+        const id = node.dataset.id;
+
+        node.addEventListener("mouseenter", () => {
+          tooltip.style.opacity = "1";
+          tooltip.innerHTML = `<strong>${buildings[id].name}</strong><br>Click for details`;
+        });
+
+        node.addEventListener("mousemove", (e) => {
+          const rect = mapContainer.getBoundingClientRect();
+          tooltip.style.left = `${e.clientX - rect.left + 12}px`;
+          tooltip.style.top = `${e.clientY - rect.top + 12}px`;
+        });
+
+        node.addEventListener("mouseleave", () => {
+          tooltip.style.opacity = "0";
+        });
+
+        node.addEventListener("click", () => {
+          switchTab("buildings");
+          showBuildingDetails(id);
+          routeResult.innerHTML = `Viewing details for <strong>${buildings[id].name}</strong>. You can also search a route to this destination from the left panel.`;
+          searchInput.value = buildings[id].name;
+        });
+      });
+
+      populateFromLocations();
+      renderBuildingCards();
+    </script>
+  </body>
+</html>
